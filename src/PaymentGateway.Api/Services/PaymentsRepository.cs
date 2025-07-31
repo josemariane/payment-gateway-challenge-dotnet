@@ -1,10 +1,12 @@
-﻿using PaymentGateway.Api.Models.Responses;
+﻿using System.Collections.Concurrent;
+
+using PaymentGateway.Domain.Payment;
 
 namespace PaymentGateway.Api.Services;
 
 public class PaymentsRepository
 {
-    private readonly Dictionary<Guid, PostPaymentResponse> _payments = new();
+    private readonly ConcurrentDictionary<Guid, PostPaymentResponse> _payments = new();
     
     public bool Add(PostPaymentResponse payment)
     {
