@@ -1,10 +1,14 @@
 using System.Text.Json.Serialization;
 
-namespace PaymentGateway.Domain.AcquiringBank;
+namespace PaymentGateway.Domain.Payment;
 
-[JsonSerializable(typeof(PaymentSubmissionRequest),
+
+/// <summary>
+/// Represents a payment with complete user data, including card number
+/// </summary>
+[JsonSerializable(typeof(PaymentSubmission),
     GenerationMode = JsonSourceGenerationMode.Serialization)]
-public record PaymentSubmissionRequest(
+public record PaymentSubmission(
     [property: JsonPropertyName("card_number")]
     string CardNumber,
     [property: JsonPropertyName("expiry_date")]

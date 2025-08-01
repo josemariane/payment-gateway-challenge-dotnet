@@ -1,5 +1,6 @@
 ﻿namespace PaymentGateway.Domain.Payment;
 
+
 public class PostPaymentResponse
 {
     public Guid Id { get; set; }

@@ -8,5 +8,5 @@ namespace PaymentGateway.Infrastructure.ExternalApis;
 public interface  IAcquiringBankApi
 {
     [Refit.Post("/payments")]
-    public Task<IApiResponse<SubmittedPaymentResponse>> PostPayment(PaymentSubmissionRequest req);
+    public Task<IApiResponse<SubmittedPaymentResponse>> PostPayment(PaymentSubmission req);
 }

@@ -27,7 +27,7 @@ public class MountebankTest : IAsyncLifetime
     public async Task When_BasicRequestSent_ApiShouldReturnAuthorized()
     {
         var bankApi = RestService.For<IAcquiringBankApi>("http://localhost:8080/");
-        var response = await bankApi.PostPayment(new PaymentSubmissionRequest("2222405343248877", "04/2026", "GBP", 2000, "123"));
+        var response = await bankApi.PostPayment(new PaymentSubmission("2222405343248877", "04/2026", "GBP", 2000, "123"));
         Assert.True(response.IsSuccessStatusCode);
         Assert.NotNull(response.Content);
         Assert.True(response.Content.Authorized);
