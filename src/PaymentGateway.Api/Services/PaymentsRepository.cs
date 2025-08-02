@@ -1,20 +1,22 @@
 ﻿using System.Collections.Concurrent;
 
-using PaymentGateway.Domain.Payment;
+using PaymentGateway.Domain.Merchant;
+using PaymentGateway.Domain.Models.Mappers;
+using PaymentGateway.Domain.Models.Payment;
 
 namespace PaymentGateway.Api.Services;
 
-public class PaymentsRepository
+public class PaymentsRepository : IPaymentsRepository
 {
-    private readonly ConcurrentDictionary<Guid, PostPaymentResponse> _payments = new();
-    
-    public bool Add(PostPaymentResponse payment)
+    private readonly ConcurrentDictionary<Guid, PaymentEntity> _payments = new();
+
+    public bool Add(PaymentEntity payment)
     {
-       return _payments.TryAdd(payment.Id, payment);
+        return _payments.TryAdd(payment.Id, payment);
     }
 
-    public PostPaymentResponse? Get(Guid id)
+    public PaymentResponseToMerchant? GetForMerchant(Guid id)
     {
-        return _payments.TryGetValue(id, out var payment) ? payment : null;
+        return _payments.TryGetValue(id, out var payment) ? payment.MapToPaymentResponseToMerchant() : null;
     }
 }

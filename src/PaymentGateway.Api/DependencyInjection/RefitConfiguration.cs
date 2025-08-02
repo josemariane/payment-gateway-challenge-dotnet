@@ -1,5 +1,7 @@
+using JetBrains.Annotations;
+
 using Microsoft.Extensions.Options;
-using PaymentGateway.Infrastructure.ExternalApis;
+
 using PaymentGateway.Infrastructure.ExternalApis.AcquiringBank;
 
 using Refit;
@@ -8,7 +10,8 @@ namespace PaymentGateway.Api.DependencyInjection;
 
 public static class RefitConfiguration
 {
-    public static IServiceCollection ConfigureRefitInjection(this IServiceCollection services, IConfiguration config)
+    [UsedImplicitly]
+    public static IServiceCollection ConfigureRefitInjection(this IServiceCollection services)
     {
         services.AddOptionsWithValidateOnStart<AcquiringBankApiSettings>();
         services.AddRefitClient<IAcquiringBankApi>()

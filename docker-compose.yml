@@ -10,6 +10,6 @@ services:
     command: --configfile /imposters/bank_simulator.ejs --allowInjection
     volumes:
       - type: bind
-        source: ./imposters
+        source: ./test/PaymentGateway.Api.Tests/imposters/
         target: /imposters
       

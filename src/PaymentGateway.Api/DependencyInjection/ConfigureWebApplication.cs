@@ -1,31 +1,24 @@
-using PaymentGateway.Api.Services;
+using JetBrains.Annotations;
 
 using Microsoft.Extensions.Logging.Configuration;
-
-using OpenTelemetry.Trace;
 
 
 namespace PaymentGateway.Api.DependencyInjection;
 
 public static class ConfigureWebApplication
 {
-    public static IServiceCollection ConfigureAspNetHost(this IServiceCollection services, IConfiguration config)
+    [UsedImplicitly]
+    public static IServiceCollection ConfigureAspNetHost(this IServiceCollection services)
     {
         services.AddLogging(b =>
         {
             b.AddConfiguration();
         });
-        services.AddOpenTelemetry()
-            .WithLogging()
-            .WithMetrics()
-            .WithTracing(b => b.AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddConsoleExporter());
+        services.AddHttpLogging();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
-
-        services.AddSingleton<PaymentsRepository>();
+        services.AddOpenApi();
         services.AddRequestDecompression();
         services.AddResponseCompression(options =>
         {

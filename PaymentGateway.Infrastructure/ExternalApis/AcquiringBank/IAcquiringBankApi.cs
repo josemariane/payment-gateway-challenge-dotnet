@@ -1,12 +1,11 @@
-using PaymentGateway.Domain.Payment;
 using PaymentGateway.Domain.AcquiringBank;
 
 using Refit;
 
-namespace PaymentGateway.Infrastructure.ExternalApis;
+namespace PaymentGateway.Infrastructure.ExternalApis.AcquiringBank;
 
-public interface  IAcquiringBankApi
+public interface IAcquiringBankApi
 {
-    [Refit.Post("/payments")]
-    public Task<IApiResponse<SubmittedPaymentResponse>> PostPayment(PaymentSubmission req);
+    [Post("/payments")]
+    public Task<IApiResponse<PaymentResponseFromBank>> PostPayment(PaymentOrderToBank req);
 }
