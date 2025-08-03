@@ -1,26 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
 
-using PaymentGateway.Api.Models.Responses;
+using Microsoft.AspNetCore.Mvc;
+
 using PaymentGateway.Api.Services;
+using PaymentGateway.Domain.Merchant;
+using PaymentGateway.Domain.Models.Payment;
 
 namespace PaymentGateway.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PaymentsController : Controller
+public class PaymentsController(
+    IPaymentsRepository paymentsRepository,
+    IPaymentIntermediationService paymentIntermediationService,
+    ILogger<PaymentsController> logger)
+    : Controller
 {
-    private readonly PaymentsRepository _paymentsRepository;
 
-    public PaymentsController(PaymentsRepository paymentsRepository)
+    [HttpPost]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(PaymentResponseToMerchant), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<PaymentResponseToMerchant>>
+        SubmitPaymentRequest([FromBody] PaymentRequestFromMerchant request)
     {
-        _paymentsRepository = paymentsRepository;
+        try
+        {
+            var response = await paymentIntermediationService.ExecutePaymentOrder(request);
+            if (response.Status is PaymentStatus.Rejected)
+            {
+                return new UnprocessableEntityResult();
+            }
+            return CreatedAtAction("GetPayment", new { response.Id }, response);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error processing payment request from merchant.");
+            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+        }
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<PostPaymentResponse?>> GetPaymentAsync(Guid id)
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(PaymentResponseToMerchant), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<PaymentResponseToMerchant>> GetPaymentAsync(Guid id)
     {
-        var payment = _paymentsRepository.Get(id);
-
-        return new OkObjectResult(payment);
+        try
+        {
+            var payment = paymentsRepository.GetForMerchant(id);
+            return payment is null ? new NotFoundResult() : payment;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error processing GET request");
+            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+        }
     }
 }
